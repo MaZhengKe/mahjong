@@ -2,10 +2,6 @@ package com.mk.util;
 
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.mk.Pai;
 
 public class XiangTingNotList {
     private static int S;
@@ -17,32 +13,8 @@ public class XiangTingNotList {
         long l = System.currentTimeMillis();
         List<Pai> pais = get(desk);
         System.out.println(System.currentTimeMillis() - l);
+        assert pais != null;
         pais.stream().sorted(Comparator.comparing(Pai::getJzs).reversed()).forEach(System.out::println);
-    }
-
-
-    public static int getXT(byte[]... a) {
-        List<Integer> list = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            byte[] bytes = a[i];
-            for (int j = 1; j <= 9; j++) {
-                if (bytes[j] > 0) {
-                    for (int k = 0; k < bytes[j]; k++) {
-                        list.add(j + i * 10);
-                    }
-                }
-            }
-        }
-        for (int i = 1; i <= 7; i++) {
-            if (a[3][i] > 0) {
-                for (int k = 0; k < a[3][i]; k++) {
-                    list.add(i + 30);
-                }
-            }
-
-        }
-        int[] shoupai = list.stream().mapToInt(i -> i).toArray();
-        return getXiangTing(shoupai) - 1;
     }
 
 
@@ -77,43 +49,35 @@ public class XiangTingNotList {
     }
 
 
-    public static List<Pai> get(Desk desk) {
-        int[] shoupai = desk.getShoupai();
-        int[] paihe = desk.getPaihe();
-        int[] allShouPai = transform(shoupai);
+    private static List<Pai> get(Desk desk) {
+        int[] shouPai = desk.getShouPai();
+        int[] paiHe = desk.getPaiHe();
+        int[] allShouPai = transform(shouPai);
         List<Pai> pais = new ArrayList<>();
-        int XT = getXiangTing(shoupai);
+        int XT = getXiangTing(shouPai);
         if (XT == 0)
             return null;
-        for (int i = 0; i < shoupai.length; i++) {
-            final int index = shoupai[i];
+        for (int i = 0; i < shouPai.length; i++) {
+            final int index = shouPai[i];
             if (pais.stream().anyMatch(pai -> pai.getIndex() == index)) {
                 continue;
             }
             Pai pai = new Pai(index);
             pai.setXts(XT - 1);
-            int tmp = shoupai[i];
+            int tmp = shouPai[i];
             int jzNum = 0;
             for (int j = 1; j <= 37; j++) {
                 if (j % 10 == 0)
                     continue;
-                shoupai[i] = j;
-                int nextXT = getXiangTing(shoupai);
+                shouPai[i] = j;
+                int nextXT = getXiangTing(shouPai);
                 if (nextXT < XT) {
-                    int jz = 4 - paihe[j] - allShouPai[j];
+                    int jz = 4 - paiHe[j] - allShouPai[j];
                     jzNum += jz;
                     pai.getJz().put(j, jz);
                 }
             }
-            shoupai[i] = tmp;
-
-
-            if (jzNum > 20 && index >= 30) {
-                jzNum += 2;
-            }
-            if (jzNum > 20 && (index%10 == 1 || index%10==9) ) {
-                jzNum += 1;
-            }
+            shouPai[i] = tmp;
             pai.setJzs(jzNum);
             if (jzNum > 0)
                 pais.add(pai);
@@ -225,50 +189,21 @@ public class XiangTingNotList {
         return reserved;
     }
 
-    public static List<Pai> get(List<Integer> paiList) {
+    static List<Pai> get(List<Integer> paiList) {
         int[] shoupai = paiList.stream().mapToInt(Integer::valueOf).map(i -> i % 10 == 0 ? i + 5 : i).toArray();
         Desk desk = new Desk(shoupai);
         int[] paihe = new int[38];
         for (int i = 1; i < 38; i++) {
             if (i < 10)
-                paihe[i] = Dask.M[i];
+                paihe[i] = Desk.M[i];
             else if (i > 10 && i < 20)
-                paihe[i] = Dask.P[i - 10];
+                paihe[i] = Desk.P[i - 10];
             else if (i > 20 && i < 30)
-                paihe[i] = Dask.S[i - 20];
+                paihe[i] = Desk.S[i - 20];
             else if (i > 30)
-                paihe[i] = Dask.Z[i - 30];
+                paihe[i] = Desk.Z[i - 30];
         }
-        desk.setPaihe(paihe);
-        List<Pai> pais = get(desk);
-        return pais;
-    }
-
-    private static int[] change(String text) {
-        int[] shouPai = new int[text.length() - 4];
-        Pattern p = Pattern.compile("([0-9]*?)m([0-9]*)p([0-9]*)s([0-9]*)z");
-
-        Matcher m = p.matcher(text);
-
-        if (m.find()) {
-            char[] ms = m.group(1).toCharArray();
-            char[] ps = m.group(2).toCharArray();
-            char[] ss = m.group(3).toCharArray();
-            char[] zs = m.group(4).toCharArray();
-            int index = 0;
-            for (char c : ms) {
-                shouPai[index++] = (int) c - 48;
-            }
-            for (char c : ps) {
-                shouPai[index++] = (int) c - 48 + 10;
-            }
-            for (char c : ss) {
-                shouPai[index++] = (int) c - 48 + 20;
-            }
-            for (char c : zs) {
-                shouPai[index++] = (int) c - 48 + 30;
-            }
-        }
-        return shouPai;
+        desk.setPaiHe(paihe);
+        return get(desk);
     }
 }

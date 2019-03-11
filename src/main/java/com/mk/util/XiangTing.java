@@ -6,7 +6,7 @@ import java.util.List;
 
 public class XiangTing {
     private static int S;
-    private static int count;
+
     public static void main(String[] args) {
         int[] shouPai = {1, 4, 7, 8,9, 14, 15, 18, 22, 25, 28, 29,  32, 32};
         long l = System.currentTimeMillis();
@@ -14,7 +14,7 @@ public class XiangTing {
         System.out.println(System.currentTimeMillis() - l);
     }
 
-    public static int getXiangTing(int [] shouPai){
+    private static int getXiangTing(int[] shouPai){
         S = 9;
         takeMianZi(shouPai, new ArrayList<>(), 0, 4 - (shouPai.length - 2) / 3);
         return S;
@@ -37,7 +37,6 @@ public class XiangTing {
     private static void takeDaZi(int[] shouPai, List<int[]> mianzi, List<int[]> dazi, int[] duzi, int i, int m, int p, int d) {
 
         if (i >= shouPai.length - 1 || d + m == 4) {
-            count++;
             d = Math.min(d, 4 - m);
             int mys = 9 - 2 * m - d - p;
             S = Math.min(S, mys);

@@ -6,11 +6,16 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Desk {
-    public Desk(int[] shoupai) {
-        this.shoupai = shoupai;
+    Desk(int[] shouPai) {
+        this.shouPai = shouPai;
     }
 
-    private int[] shoupai;
-    private int[] baopai;
-    private int[] paihe;
+    public static byte[] M = new byte[10];
+    public static byte[] P = new byte[10];
+    public static byte[] S = new byte[10];
+    public static byte[] Z = new byte[8];
+
+    private int[] shouPai;
+    private int[] baoPai;
+    private int[] paiHe;
 }

@@ -33,6 +33,7 @@
         <dependency>
             <groupId>opencv</groupId>
             <artifactId>opencv</artifactId>
+            <version>3.4.1</version>
             <scope>system</scope>
             <systemPath>${basedir}/lib/opencv-341.jar</systemPath>
         </dependency>

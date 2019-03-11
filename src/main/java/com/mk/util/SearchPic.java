@@ -9,7 +9,6 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -18,25 +17,24 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 import static org.opencv.imgproc.Imgproc.*;
 
 public class SearchPic {
 
-    public static Mat[] pa = new Mat[37];
-    public static Mat[] spa = new Mat[37];
-    public static Mat lizhi;
-    public static Point lizhidian;
-    public static Mat hu;
-    public static Mat over;
+    private static Mat[] pa = new Mat[37];
+    private static Mat[] spa = new Mat[37];
+    private static Mat lizhi;
+    static Point lizhidian;
+    private static Mat hu;
+    private static Mat over;
 
     static {
 
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
 
-        final String s = "D:\\mj2\\";
+        final String s = "pic\\";
         final Size dsize = new Size(31, 42);
         for (int i = 0; i < 9; i++) {
             Mat tmp = Imgcodecs.imread(s + (i + 1) + "m.png");
@@ -86,10 +84,7 @@ public class SearchPic {
         over = Imgcodecs.imread(s + "over.png");
     }
 
-    private static List<Mat> colorPaiChi;
-    private static List<Mat> colorFL;
-
-    public static Mat xiuzheng(Mat src) {
+    private static Mat xiuzheng(Mat src) {
 
         MatOfPoint2f srcTri = new MatOfPoint2f((
                 new Point(0, 0)),
@@ -109,11 +104,7 @@ public class SearchPic {
         return dst;
     }
 
-    public static Mat getShouPai(Mat source) {
-        return source.submat(750, 880, 650, 1350);
-    }
-
-    public static boolean isHu(Mat source) {
+    static boolean isHu(Mat source) {
 
         Mat huqu = source.submat(570, 633, 133, 188);
 
@@ -124,15 +115,12 @@ public class SearchPic {
         double[] doubles = g_result.get((int) maxLoc.y, (int) maxLoc.x);
         double v = doubles[0];
 
-        if (v > 0.99) {
-            return true;
-        }
-        return false;
+        return v > 0.99;
 
 
     }
 
-    public static boolean isOver(Mat source) {
+    static boolean isOver(Mat source) {
 
         Mat overqu = source.submat(927, 1018, 1600, 1750);
 
@@ -143,10 +131,7 @@ public class SearchPic {
         double[] doubles = g_result.get((int) maxLoc.y, (int) maxLoc.x);
         double v = doubles[0];
 
-        if (v > 0.98) {
-            return true;
-        }
-        return false;
+        return v > 0.98;
 
 
     }
@@ -189,7 +174,7 @@ public class SearchPic {
         return res;
     }
 
-    public static List<Mat> getPaiChi(Mat source) {
+    private static List<Mat> getPaiChi(Mat source) {
         Mat mat1 = source.submat(397, 547, 825, 1074);
         Mat mat2 = source.submat(548, 816, 685, 835);
         Mat mat3 = source.submat(527, 778, 1082, 1232);
@@ -205,7 +190,7 @@ public class SearchPic {
                 source.submat(788, 938, 842, 1091));
     }
 
-    public static List<Mat> getFL(Mat source) {
+    private static List<Mat> getFL(Mat source) {
 //        BufferedImage bufferedImage = Mat2BufImg(source);
         Mat mat1 = source.submat(239, 322, 520, 1010);
 //        bufferedImage = Mat2BufImg(mat1);
@@ -271,23 +256,10 @@ public class SearchPic {
         return res;
     }
 
-    private static int getCount(Mat source) {
-
-        int count = 0;
-        for (int i = 5; i < source.cols(); i++) {
-            if (Core.countNonZero(source.col(i)) < 9) {
-                count++;
-                i += 5;
-            }
-        }
-        return count;
-    }
-
     private static List<Mat> getSinglePai(Mat source, Mat colorSource) {
 
         List<Mat> res = new ArrayList<>();
         int next = 0;
-        int count = 0;
         for (int i = 0; i < source.cols(); i++) {
             if (Core.countNonZero(source.col(i)) < 17) {
                 if (i < 5) {
@@ -295,7 +267,6 @@ public class SearchPic {
                     continue;
                 }
                 Mat ge;
-                count++;
                 if ((i - next) < 52 && (i - next) > 30) {
                     if ((i - next) > 44) {
 
@@ -331,7 +302,6 @@ public class SearchPic {
 
         List<Mat> res = new ArrayList<>();
         int next = 0;
-        int count = 0;
         for (int i = 0; i < source.cols(); i++) {
             if (Core.countNonZero(source.col(i)) < 65) {
                 if (i < 5) {
@@ -339,7 +309,6 @@ public class SearchPic {
                     continue;
                 }
                 Mat ge;
-                count++;
                 if ((i - next) < 120) {
                     if ((i - next) > 75) {
                         ge = colorSource.submat(0, source.rows(), next + 1, i);
@@ -363,77 +332,6 @@ public class SearchPic {
         return false;
     }
 
-    public static List<Mat> getPai(Mat source) {
-
-        BufferedImage image;
-
-        source.convertTo(source, CvType.CV_32SC1);
-
-        List<MatOfPoint> pointList = new ArrayList<>();
-        Mat hierarchy = new Mat();
-
-        // image = Mat2BufImg(source);
-        Imgproc.findContours(source, pointList, hierarchy, Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
-
-        for (int i = 0; i < pointList.size(); i++) {
-
-            double[] ds = hierarchy.get(0, i);
-            if (ds[2] != -1) {
-                continue;
-            }
-            if (ds[0] == -1) {
-                continue;
-            }
-            MatOfPoint matOfPoint = pointList.get(i);
-            List<Point> points = matOfPoint.toList();
-            // 36-150
-            if (points.get(0).y > source.rows() / 2 && points.size() > 100 || points.size() > 150 || points.size() < 10)
-                continue;
-            int maxX = -1;
-            int minX = 2000;
-            int maxY = -1;
-            int minY = 2000;
-
-            Point maxYp = points.get(0);
-            for (Point point : points) {
-                int px = (int) point.x;
-                int py = (int) point.y;
-                if (px > maxX)
-                    maxX = px;
-                if (px < minX)
-                    minX = px;
-                if (py > maxY) {
-                    maxYp = point;
-                    maxY = py;
-                }
-                if (py < minY)
-                    minY = py;
-            }
-
-            double x = maxX - minX;
-            double y = maxY - minY;
-            if (x < 80 && y < 80 && Math.min(x, y) > 32 && Math.max(x, y) > 35) {
-                //if (x < 150 && y < 150 && Math.min(x, y) > 75 && Math.max(x, y) > 35) {
-//                if((maxYp.x - minX)<20){
-//                    int finalMaxX = maxX;
-//                    Point point1 = points.stream().filter(point -> (finalMaxX - point.x) < 20).max((o1, o2) -> (int) (o1.y - o2.y)).get();
-//                    maxY = (int)point1.y;
-//                }else {
-//                    int finalMinX = minX;
-//                    Point point1 = points.stream().filter(point -> (point.x - finalMinX) < 20).max((o1, o2) -> (int) (o1.y - o2.y)).get();
-//                    maxY = (int)point1.y;
-//                }
-
-                //Mat tmp = source.submat(minY + 25, maxY - 5, minX + 3, maxX - 2);
-                Mat tmp = source.submat(minY + 1, maxY, minX + 1, maxX);
-                //Imgcodecs.imwrite("D:/image/tmp/" + i + "-" + points.size() + ".png", tmp);
-                //Imgproc.drawContours(source,pointList,i,new Scalar(r.nextInt()%255 ,r.nextInt()%255 ,r.nextInt()%255 ),-1);
-                //image = Mat2BufImg(source);
-            }
-        }
-        //image = Mat2BufImg(source);
-        return null;
-    }
 
     public static Mat BufImg2Mat(BufferedImage original, int imgType, int matType) {
         if (original == null) {
@@ -463,7 +361,7 @@ public class SearchPic {
         return mat;
     }
 
-    public static Mat BufferedImage2Mat(BufferedImage image) throws IOException {
+    static Mat BufferedImage2Mat(BufferedImage image) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ImageIO.write(image, "jpg", byteArrayOutputStream);
         byteArrayOutputStream.flush();
@@ -471,7 +369,7 @@ public class SearchPic {
     }
 
 
-    public static void set(Mat image) {
+    static void set(Mat image) {
 
         long now = System.currentTimeMillis();
         //Mat source = Imgcodecs.imread("D:/image/test4.png");
@@ -492,9 +390,9 @@ public class SearchPic {
 //        Imgcodecs.imwrite("D:/image/tmp/res555.png", dst);
 
         final List<Mat> paiChis = getPaiChi(dst);
-        colorPaiChi = getPaiChi(image);
+        List<Mat> colorPaiChi = getPaiChi(image);
         final List<Mat> fl = getFL(dst);
-        colorFL = getFL(image);
+        List<Mat> colorFL = getFL(image);
 
 
         for (int i = 0; i < paiChis.size(); i++) {
@@ -523,7 +421,7 @@ public class SearchPic {
         //System.out.println("搜索牌池：" + (System.currentTimeMillis() - now));
     }
 
-    private static String search(Mat source) {
+    private static void search(Mat source) {
 //        BufferedImage bufferedImage = Mat2BufImg(source);
 
         Mat g_result = new Mat();
@@ -558,19 +456,18 @@ public class SearchPic {
         }
         switch (i) {
             case 0:
-                Dask.M[num]++;
-                return num + "万: " + max;
+                Desk.M[num]++;
+                return;
             case 1:
-                Dask.P[num]++;
-                return num + "筒: " + max;
+                Desk.P[num]++;
+                return;
             case 2:
-                Dask.S[num]++;
-                return num + "索: " + max;
+                Desk.S[num]++;
+                return;
             case 3:
-                Dask.Z[num]++;
-                return num + "z: " + max;
+                Desk.Z[num]++;
+                return;
             default:
-                return "";
         }
     }
 
