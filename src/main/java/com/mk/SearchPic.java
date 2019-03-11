@@ -1,4 +1,4 @@
-package com.mk.util;
+package com.mk;
 
 import org.opencv.core.*;
 import org.opencv.core.Point;
@@ -25,7 +25,7 @@ public class SearchPic {
     private static Mat[] pa = new Mat[37];
     private static Mat[] spa = new Mat[37];
     private static Mat lizhi;
-    static Point lizhidian;
+    static Point liZhiDian;
     private static Mat hu;
     private static Mat over;
 
@@ -35,48 +35,48 @@ public class SearchPic {
 
 
         final String s = "pic\\";
-        final Size dsize = new Size(31, 42);
+        final Size dSize = new Size(31, 42);
         for (int i = 0; i < 9; i++) {
             Mat tmp = Imgcodecs.imread(s + (i + 1) + "m.png");
             Mat dst = new Mat();
-            Imgproc.resize(tmp, dst, dsize);
+            Imgproc.resize(tmp, dst, dSize);
             pa[i] = dst;
             spa[i] = tmp;
         }
         for (int i = 9; i < 18; i++) {
             Mat tmp = Imgcodecs.imread(s + (i - 8) + "p.png");
             Mat dst = new Mat();
-            Imgproc.resize(tmp, dst, dsize);
+            Imgproc.resize(tmp, dst, dSize);
             pa[i] = dst;
             spa[i] = tmp;
         }
         for (int i = 18; i < 27; i++) {
             Mat tmp = Imgcodecs.imread(s + (i - 17) + "s.png");
             Mat dst = new Mat();
-            Imgproc.resize(tmp, dst, dsize);
+            Imgproc.resize(tmp, dst, dSize);
             pa[i] = dst;
             spa[i] = tmp;
         }
         for (int i = 27; i < 34; i++) {
             Mat tmp = Imgcodecs.imread(s + (i - 26) + "z.png");
             Mat dst = new Mat();
-            Imgproc.resize(tmp, dst, dsize);
+            Imgproc.resize(tmp, dst, dSize);
             pa[i] = dst;
             spa[i] = tmp;
         }
         Mat tmp1 = Imgcodecs.imread(s + "s5m.png");
         Mat dst1 = new Mat();
-        Imgproc.resize(tmp1, dst1, dsize);
+        Imgproc.resize(tmp1, dst1, dSize);
         pa[34] = dst1;
         spa[34] = tmp1;
         Mat tmp2 = Imgcodecs.imread(s + "s5p.png");
         Mat dst2 = new Mat();
-        Imgproc.resize(tmp2, dst2, dsize);
+        Imgproc.resize(tmp2, dst2, dSize);
         pa[35] = dst2;
         spa[35] = tmp2;
         Mat tmp3 = Imgcodecs.imread(s + "s5s.png");
         Mat dst3 = new Mat();
-        Imgproc.resize(tmp3, dst3, dsize);
+        Imgproc.resize(tmp3, dst3, dSize);
         pa[36] = dst3;
         spa[36] = tmp3;
         lizhi = Imgcodecs.imread(s + "lizhi.png");
@@ -84,7 +84,7 @@ public class SearchPic {
         over = Imgcodecs.imread(s + "over.png");
     }
 
-    private static Mat xiuzheng(Mat src) {
+    private static Mat xiuZheng(Mat src) {
 
         MatOfPoint2f srcTri = new MatOfPoint2f((
                 new Point(0, 0)),
@@ -137,7 +137,7 @@ public class SearchPic {
     }
 
     static List<Integer> getsPai(Mat source) {
-        lizhidian = new Point();
+        liZhiDian = new Point();
         Mat lizhiqu = source.submat(750, 880, 650, 1350);
         //BufferedImage bufferedImage = Mat2BufImg(lizhiqu);
 
@@ -151,7 +151,7 @@ public class SearchPic {
         if (v > 0.97) {
             maxLoc.x += 750;
             maxLoc.y += 800;
-            lizhidian = maxLoc;
+            liZhiDian = maxLoc;
         }
 
 
@@ -378,8 +378,8 @@ public class SearchPic {
 
         Imgproc.cvtColor(image, gray, Imgproc.COLOR_BGR2GRAY);
 
-        gray = xiuzheng(gray);
-        image = xiuzheng(image);
+        gray = xiuZheng(gray);
+        image = xiuZheng(image);
 
         Mat dst = new Mat();
         Imgproc.adaptiveThreshold(gray, dst, 255, ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 9, 11);

@@ -1,4 +1,4 @@
-package com.mk.util;
+package com.mk;
 
 import org.opencv.core.Mat;
 
@@ -102,10 +102,10 @@ public class CaptureScreen {
                 );
                 if (radioButton.isSelected() && max.isPresent()) {
                     Pai pai = max.get();
-                    if (SearchPic.lizhidian.x > 1) {
-                        System.out.println(SearchPic.lizhidian.x);
+                    if (SearchPic.liZhiDian.x > 1) {
+                        System.out.println(SearchPic.liZhiDian.x);
                         if (pai.getJzs() > 2) {
-                            click((int) SearchPic.lizhidian.x, (int) SearchPic.lizhidian.y);
+                            click((int) SearchPic.liZhiDian.x, (int) SearchPic.liZhiDian.y);
                             try {
                                 Thread.sleep(300);
                             } catch (InterruptedException e) {

@@ -1,4 +1,4 @@
-package com.mk.util;
+package com.mk;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
