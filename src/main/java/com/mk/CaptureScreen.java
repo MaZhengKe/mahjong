@@ -1,5 +1,6 @@
 package com.mk;
 
+import org.junit.Test;
 import org.opencv.core.Mat;
 
 import java.awt.*;
@@ -29,7 +30,7 @@ public class CaptureScreen {
 
     private static void click(int x, int y) {
 
-//鼠标移动到某一点
+        //鼠标移动到某一点
         PointerInfo pinfo = MouseInfo.getPointerInfo();
         Point p = pinfo.getLocation();
 
@@ -79,9 +80,11 @@ public class CaptureScreen {
             }
             String text = getText(pais);
             int size = text.length() - 4;
+            // 先判断label颜色
             l.setForeground(size % 3 != 2 ? Color.red : Color.black);
             l.setText(size + "张：" + text);
 
+            // 当要出牌时
             if (size % 3 == 2) {
                 List<Pai> paiList = XiangTingNotList.get(pais);
                 if (paiList == null) {
@@ -103,7 +106,7 @@ public class CaptureScreen {
                 if (radioButton.isSelected() && max.isPresent()) {
                     Pai pai = max.get();
                     if (SearchPic.liZhiDian.x > 1) {
-                        System.out.println(SearchPic.liZhiDian.x);
+                        System.out.println(SearchPic.liZhiDian.x + "," +SearchPic.liZhiDian.y);
                         if (pai.getJzs() > 2) {
                             click((int) SearchPic.liZhiDian.x, (int) SearchPic.liZhiDian.y);
                             try {
@@ -116,6 +119,7 @@ public class CaptureScreen {
                     int paiIndex = pai.getIndex();
                     int index = pais.contains(paiIndex) ? pais.indexOf(paiIndex) : pais.indexOf(paiIndex - 5);
                     click(365 + 81 * index, 950);
+                    System.out.println(365 + 81 * index + "," + 950);
                 }
                 //System.out.println("推荐花费" + (System.currentTimeMillis() - timeMillis));
             }
@@ -195,4 +199,14 @@ public class CaptureScreen {
         }
     }
 
+    @Test
+    public void test() {
+        BufferedImage source = getBufferedImage();
+        Mat mat = null;
+        try {
+            mat = SearchPic.BufferedImage2Mat(source);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

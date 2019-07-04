@@ -1,5 +1,6 @@
 package com.mk;
 
+import org.junit.Test;
 import org.opencv.core.*;
 import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -104,9 +105,25 @@ public class SearchPic {
         return dst;
     }
 
+    @Test
+    public void isHu() {
+        Mat g_src = Imgcodecs.imread("C:\\Users\\13870\\Pictures\\Screenshots\\tem.png");
+        Mat huqu = g_src.submat(540, 660, 100, 300);
+        Mat g_tem = Imgcodecs.imread("D:\\github\\mahjong\\pic\\hu.png");
+        Mat g_result = new Mat();
+        Imgproc.matchTemplate(huqu, g_tem, g_result, Imgproc.TM_CCORR_NORMED); // 归一化平方差匹配法
+//        Core.normalize(g_result, g_result, 0, 1, Core.NORM_MINMAX, -1, new Mat());
+        Core.MinMaxLocResult mmlr = Core.minMaxLoc(g_result);
+        Point matchLocation = mmlr.maxLoc; // 此处使用maxLoc还是minLoc取决于使用的匹配算法
+
+        double[] doubles = g_result.get((int) matchLocation.y, (int) matchLocation.x);
+        double v = doubles[0];
+        System.out.println(v);
+    }
+
     static boolean isHu(Mat source) {
 
-        Mat huqu = source.submat(570, 633, 133, 188);
+        Mat huqu = source.submat(540, 660, 100, 300);
 
         Mat g_result = new Mat();
         Imgproc.matchTemplate(huqu, hu, g_result, Imgproc.TM_CCORR_NORMED);
@@ -120,9 +137,23 @@ public class SearchPic {
 
     }
 
+    @Test
+    public void isOver() {
+        Mat g_src = Imgcodecs.imread("C:\\Users\\13870\\Pictures\\Screenshots\\tem2.png");
+        Mat overqu = g_src.submat(760, 1080, 1440, 1920);
+        Mat g_result = new Mat();
+        Imgproc.matchTemplate(overqu, over, g_result, Imgproc.TM_CCORR_NORMED); // 归一化平方差匹配法
+        Core.MinMaxLocResult mmlr = Core.minMaxLoc(g_result);
+        Point matchLocation = mmlr.maxLoc; // 此处使用maxLoc还是minLoc取决于使用的匹配算法
+
+        double[] doubles = g_result.get((int) matchLocation.y, (int) matchLocation.x);
+        double v = doubles[0];
+        System.out.println(v);
+    }
+
     static boolean isOver(Mat source) {
 
-        Mat overqu = source.submat(927, 1018, 1600, 1750);
+        Mat overqu = source.submat(760, 1080, 1440, 1920);
 
         Mat g_result = new Mat();
         Imgproc.matchTemplate(overqu, over, g_result, Imgproc.TM_CCORR_NORMED);
@@ -131,14 +162,52 @@ public class SearchPic {
         double[] doubles = g_result.get((int) maxLoc.y, (int) maxLoc.x);
         double v = doubles[0];
 
-        return v > 0.98;
+        return v > 0.97;
 
 
     }
 
+    @Test
+    public void testLizhi() {
+        liZhiDian = new Point();
+        Mat g_src = Imgcodecs.imread("C:\\Users\\13870\\Pictures\\Screenshots\\tem3.png");
+        Mat lizhiqu = g_src.submat(540, 1080, 900, 1920);
+        Mat g_result = new Mat();
+        Imgproc.matchTemplate(lizhiqu, lizhi, g_result, Imgproc.TM_CCORR_NORMED); // 归一化平方差匹配法
+//        Core.normalize(g_result, g_result, 0, 1, Core.NORM_MINMAX, -1, new Mat());
+        Core.MinMaxLocResult mmlr = Core.minMaxLoc(g_result);
+        Point matchLocation = mmlr.maxLoc; // 此处使用maxLoc还是minLoc取决于使用的匹配算法
+
+        double[] doubles = g_result.get((int) matchLocation.y, (int) matchLocation.x);
+        double v = doubles[0];
+        if (v > 0.97) {
+            matchLocation.x += 750;
+            matchLocation.y += 800;
+            liZhiDian = matchLocation;
+        }
+
+
+        List<Integer> res = new ArrayList<>();
+
+        Mat submat = g_src.submat(860, 1028, 320, 1785);
+
+        Mat gray = new Mat();
+
+        Imgproc.cvtColor(submat, gray, Imgproc.COLOR_BGR2GRAY);
+
+        Mat dst = new Mat();
+        Imgproc.adaptiveThreshold(gray, dst, 255, ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 9, 11);
+
+        List<Mat> matList = getSinglesPai(dst, submat);
+        for (Mat mat : matList) {
+            res.add(searchs(mat));
+        }
+        System.out.println(res);
+    }
+
     static List<Integer> getsPai(Mat source) {
         liZhiDian = new Point();
-        Mat lizhiqu = source.submat(750, 880, 650, 1350);
+        Mat lizhiqu = source.submat(540, 1080, 900, 1820);
         //BufferedImage bufferedImage = Mat2BufImg(lizhiqu);
 
         Mat g_result = new Mat();
