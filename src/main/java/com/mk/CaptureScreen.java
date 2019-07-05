@@ -106,9 +106,9 @@ public class CaptureScreen {
                 if (radioButton.isSelected() && max.isPresent()) {
                     Pai pai = max.get();
                     if (SearchPic.liZhiDian.x > 1) {
-                        System.out.println(SearchPic.liZhiDian.x + "," +SearchPic.liZhiDian.y);
+                        System.out.println(SearchPic.liZhiDian.y + "," +SearchPic.liZhiDian.x);
                         if (pai.getJzs() > 2) {
-                            click((int) SearchPic.liZhiDian.x, (int) SearchPic.liZhiDian.y);
+                            click((int) SearchPic.liZhiDian.y, (int) SearchPic.liZhiDian.x);
                             try {
                                 Thread.sleep(300);
                             } catch (InterruptedException e) {
