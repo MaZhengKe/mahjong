@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class XiangTing {
+public class XiangTingUtil {
     private static int S;
 
-    public static void main(String[] args) {
-        int[] shouPai = {1, 4, 7, 8,9, 14, 15, 18, 22, 25, 28, 29,  32, 32};
-        long l = System.currentTimeMillis();
-        System.out.println(getXiangTing(shouPai));
-        System.out.println(System.currentTimeMillis() - l);
-    }
+//    public static void main(String[] args) {
+//        int[] shouPai = {1, 4, 7, 8,9, 14, 15, 18, 22, 25, 28, 29,  32, 32};
+//        long l = System.currentTimeMillis();
+//        System.out.println(getXiangTing(shouPai));
+//        System.out.println(System.currentTimeMillis() - l);
+//    }
 
     private static int getXiangTing(int[] shouPai){
         S = 9;

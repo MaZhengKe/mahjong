@@ -6,16 +6,16 @@ import java.util.*;
 public class XiangTingNotList {
     private static int S;
 
-    public static void main(String[] args) {
-        int[] shouPai = {1, 2, 3, 3, 4, 5, 7, 8, 9, 11, 12, 18, 19, 25};
-        Desk desk = new Desk(shouPai);
-
-        long l = System.currentTimeMillis();
-        List<Pai> pais = get(desk);
-        System.out.println(System.currentTimeMillis() - l);
-        assert pais != null;
-        pais.stream().sorted(Comparator.comparing(Pai::getJzs).reversed()).forEach(System.out::println);
-    }
+//    public static void main(String[] args) {
+//        int[] shouPai = {1, 2, 3, 3, 4, 5, 7, 8, 9, 11, 12, 18, 19, 25};
+//        Desk desk = new Desk(shouPai);
+//
+//        long l = System.currentTimeMillis();
+//        List<Pai> pais = get(desk);
+//        System.out.println(System.currentTimeMillis() - l);
+//        assert pais != null;
+//        pais.stream().sorted(Comparator.comparing(Pai::getJzs).reversed()).forEach(System.out::println);
+//    }
 
 
     private static int[] transform(int[] shoupai) {
@@ -204,6 +204,22 @@ public class XiangTingNotList {
                 paihe[i] = Desk.Z[i - 30];
         }
         desk.setPaiHe(paihe);
+        return get(desk);
+    }
+
+    static List<Pai> get(Collection<Mahjong> hands, Collection<Mahjong> pool, Collection<Mahjong> fl) {
+        int[] handArray = hands.stream().mapToInt(hand -> hand.getPoint() + hand.getType().getNum()).toArray();
+        Desk desk = new Desk(handArray);
+        int[] poolArray = new int[38];
+        for (Mahjong mahjong : pool) {
+            int index = mahjong.getPoint() + mahjong.getType().getNum();
+            poolArray[index]++;
+        }
+        for (Mahjong mahjong : fl) {
+            int index = mahjong.getPoint() + mahjong.getType().getNum();
+            poolArray[index]++;
+        }
+        desk.setPaiHe(poolArray);
         return get(desk);
     }
 }
